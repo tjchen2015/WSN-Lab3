@@ -56,8 +56,8 @@ implementation
   
   //Serial define
   BlinkC.SerialControl -> SerialActiveMessageC;
-  BlinkC.SerialReceive -> SerialActiveMessageC.Receive[AM_BLINKTORADIO];
-  BlinkC.SerialAMSend -> SerialActiveMessageC.AMSend[AM_BLINKTORADIO];
+  BlinkC.SerialReceive -> SerialActiveMessageC.Receive[AM_BLINKTORADIOMSG];
+  BlinkC.SerialAMSend -> SerialActiveMessageC.AMSend[AM_BLINKTORADIOMSG];
   BlinkC.SerialPacket -> SerialActiveMessageC;
 }
 

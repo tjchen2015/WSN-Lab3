@@ -68,7 +68,7 @@ implementation
 		btrpkt-> counter = counter;
 		if(call SerialAMSend.send(AM_BROADCAST_ADDR, &pkt, sizeof(BlinkToRadioMsg)) == SUCCESS){
 			busy = TRUE;
-			call Leds.led0Toggle();
+			//call Leds.led0Toggle();
 		}
 	}
   }
@@ -86,6 +86,10 @@ implementation
   }
   
   event message_t * SerialReceive.receive(message_t *msg, void *payload, uint8_t len){
+	if(len == sizeof(BlinkToRadioMsg)){
+		BlinkToRadioMsg* btrpkt = (BlinkToRadioMsg*)payload;
+		call Leds.set(btrpkt->counter);
+	}
 	return msg;
   }
   
