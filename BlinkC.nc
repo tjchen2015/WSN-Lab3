@@ -35,40 +35,65 @@
  **/
 
 #include "Timer.h"
+#include "BlinkToRadio.h"
 
 module BlinkC @safe()
 {
   uses interface Timer<TMilli> as Timer0;
-  uses interface Timer<TMilli> as Timer1;
-  uses interface Timer<TMilli> as Timer2;
   uses interface Leds;
   uses interface Boot;
+  
+  //Serial define
+  uses interface SplitControl as SerialControl;
+  uses interface Receive as SerialReceive;
+  uses interface AMSend as SerialAMSend;
+  uses interface Packet as SerialPacket;
 }
 implementation
 {
+  bool busy = FALSE;
+  uint8_t counter = 0;
+  message_t pkt;
+  
   event void Boot.booted()
   {
-    call Timer0.startPeriodic( 250 );
-    call Timer1.startPeriodic( 500 );
-    call Timer2.startPeriodic( 1000 );
+	call SerialControl.start();
   }
 
   event void Timer0.fired()
   {
-    dbg("BlinkC", "Timer 0 fired @ %s.\n", sim_time_string());
-    call Leds.led0Toggle();
+	if(!busy){
+		BlinkToRadioMsg* btrpkt = (BlinkToRadioMsg*)(call SerialPacket.getPayload(&pkt, sizeof (BlinkToRadioMsg)));
+		btrpkt -> nodeid = TOS_NODE_ID;
+		btrpkt-> counter = counter;
+		if(call SerialAMSend.send(AM_BROADCAST_ADDR, &pkt, sizeof(BlinkToRadioMsg)) == SUCCESS){
+			busy = TRUE;
+			call Leds.led0Toggle();
+		}
+	}
   }
   
-  event void Timer1.fired()
-  {
-    dbg("BlinkC", "Timer 1 fired @ %s \n", sim_time_string());
-    call Leds.led1Toggle();
+  event void SerialControl.startDone(error_t error){
+	if (error == SUCCESS){
+		call Timer0.startPeriodic(TIMER_PERIOD_MILLI);
+	}
+	else{
+		call SerialControl.start();
+	}
   }
   
-  event void Timer2.fired()
-  {
-    dbg("BlinkC", "Timer 2 fired @ %s.\n", sim_time_string());
-    call Leds.led2Toggle();
+  event void SerialControl.stopDone(error_t error){
+  }
+  
+  event message_t * SerialReceive.receive(message_t *msg, void *payload, uint8_t len){
+	return msg;
+  }
+  
+  event void SerialAMSend.sendDone(message_t *msg, error_t error){
+	if(&pkt == msg){
+		busy = FALSE;
+		counter++;
+	}
   }
 }
 

@@ -44,15 +44,20 @@ implementation
 {
   components MainC, BlinkC, LedsC;
   components new TimerMilliC() as Timer0;
-  components new TimerMilliC() as Timer1;
-  components new TimerMilliC() as Timer2;
+  
+  //Serial
+  components SerialActiveMessageC;
 
 
   BlinkC -> MainC.Boot;
 
   BlinkC.Timer0 -> Timer0;
-  BlinkC.Timer1 -> Timer1;
-  BlinkC.Timer2 -> Timer2;
   BlinkC.Leds -> LedsC;
+  
+  //Serial define
+  BlinkC.SerialControl -> SerialActiveMessageC;
+  BlinkC.SerialReceive -> SerialActiveMessageC.Receive[AM_BLINKTORADIO];
+  BlinkC.SerialAMSend -> SerialActiveMessageC.AMSend[AM_BLINKTORADIO];
+  BlinkC.SerialPacket -> SerialActiveMessageC;
 }
 
