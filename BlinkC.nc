@@ -68,7 +68,6 @@ implementation
 		btrpkt-> counter = counter;
 		if(call SerialAMSend.send(AM_BROADCAST_ADDR, &pkt, sizeof(BlinkToRadioMsg)) == SUCCESS){
 			busy = TRUE;
-			//call Leds.led0Toggle();
 		}
 	}
   }

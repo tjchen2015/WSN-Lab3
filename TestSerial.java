@@ -47,7 +47,7 @@ public class TestSerial implements MessageListener {
   }
 
   public void userInput() {
-	Scanner scanner = new Scanner(System.in);
+    Scanner scanner = new Scanner(System.in);
   	while(true){
   		System.out.println("Please input a number to show on the LEDs: ");
   		int inputNum = scanner.nextInt();
@@ -73,7 +73,7 @@ public class TestSerial implements MessageListener {
 
   public void messageReceived(int to, Message message) {
     TestSerialMsg msg = (TestSerialMsg)message;
-	System.out.println("Received packet from nodeid " + msg.get_nodeid() + " ; counter " + msg.get_counter());
+    System.out.println("Received packet from nodeid " + msg.get_nodeid() + " ; counter " + msg.get_counter());
   }
   
   private static void usage() {
@@ -84,8 +84,8 @@ public class TestSerial implements MessageListener {
     String source = null;
     if (args.length == 2) {
       if (!args[0].equals("-comm")) {
-		usage();
-		System.exit(1);
+        usage();
+        System.exit(1);
       }
       source = args[1];
     }
